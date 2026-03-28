@@ -19,8 +19,9 @@ mkdir -p "$MACOS_DIR" "$RESOURCES_DIR"
 # Copy binary
 cp ".build/release/$APP_NAME" "$MACOS_DIR/"
 
-# Copy Info.plist
+# Copy Info.plist and app icon
 cp Resources/Info.plist "$CONTENTS_DIR/"
+cp Resources/AppIcon.icns "$RESOURCES_DIR/"
 
 # Ad-hoc code sign
 codesign --force --deep --sign - "$BUNDLE_DIR"

@@ -1,4 +1,5 @@
 <p align="center">
+  <img src="assets/icon.png" width="128" height="128" alt="CleanBar icon">
   <h1 align="center">CleanBar</h1>
   <p align="center">A lightweight macOS utility to hide menu bar icons and keep your desktop clean.</p>
 </p>
