@@ -1,0 +1,64 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-and-release:
+    runs-on: macos-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build release
+        run: ./Scripts/build.sh
+
+      - name: Zip app
+        run: zip -r CleanBar.zip CleanBar.app
+
+      - name: Get version
+        id: version
+        run: echo "tag=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: CleanBar.zip
+          tag_name: ${{ steps.version.outputs.tag }}
+
+      - name: Update Homebrew tap
+        env:
+          TAP_TOKEN: ${{ secrets.TAP_TOKEN }}
+        run: |
+          SHA256=$(shasum -a 256 CleanBar.zip | awk '{print $1}')
+          VERSION="${{ steps.version.outputs.tag }}"
+          VERSION="${VERSION#v}"
+
+          git clone https://x-access-token:${TAP_TOKEN}@github.com/bzantium/homebrew-cleanbar.git /tmp/tap
+          cat > /tmp/tap/Casks/cleanbar.rb << EOF
+          cask "cleanbar" do
+            version "${VERSION}"
+            sha256 "${SHA256}"
+
+            url "https://github.com/bzantium/cleanbar/releases/download/v#{version}/CleanBar.zip"
+            name "CleanBar"
+            desc "Lightweight macOS utility to hide menu bar icons"
+            homepage "https://github.com/bzantium/cleanbar"
+
+            app "CleanBar.app"
+
+            zap trash: [
+              "~/Library/Preferences/com.cleanbar.app.plist",
+            ]
+          end
+          EOF
+
+          cd /tmp/tap
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Update CleanBar to ${VERSION}"
+          git push
