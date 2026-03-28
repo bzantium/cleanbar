@@ -162,7 +162,7 @@ class StatusBarController: NSObject, NSMenuDelegate {
 
     private func updateToggleIcon() {
         guard let button = toggleItem.button else { return }
-        let symbolName = isCollapsed ? "chevron.right.2" : "chevron.left.2"
+        let symbolName = isCollapsed ? "chevron.right" : "chevron.left"
         let image = NSImage(systemSymbolName: symbolName, accessibilityDescription: "Toggle hidden icons")
         image?.size = Constants.toggleIconSize
         button.image = image
