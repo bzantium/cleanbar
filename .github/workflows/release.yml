@@ -50,6 +50,11 @@ jobs:
 
             app "CleanBar.app"
 
+            postflight do
+              system_command "/usr/bin/xattr",
+                             args: ["-dr", "com.apple.quarantine", "#{appdir}/CleanBar.app"]
+            end
+
             zap trash: [
               "~/Library/Preferences/com.cleanbar.app.plist",
             ]
