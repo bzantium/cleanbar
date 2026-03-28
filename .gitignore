@@ -1,0 +1,6 @@
+.build/
+CleanBar.app/
+.vscode/
+.swiftpm/
+*.zip
+.DS_Store
